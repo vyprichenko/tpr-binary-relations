@@ -42,8 +42,6 @@ class Model {
 
     calcMethod: CalculationMethod = CalculationMethod.Comparison;
 
-    private _comparisonsMatrix?: Comparison[][];
-
     constructor() {
         makeObservable(this, {
             variants: observable,
@@ -60,13 +58,11 @@ class Model {
     }
 
     get comparisonsMatrix() {
-        if (this._comparisonsMatrix) return this._comparisonsMatrix;
-        this._comparisonsMatrix = this.experts.map((e) =>
+        return this.experts.map((e) =>
             this.variants.flatMap((v1) =>
                 this.variants.map((v2) => new Comparison(v1, v2, e))
             )
         );
-        return this._comparisonsMatrix;
     }
 
     get weightsMatrix() {
