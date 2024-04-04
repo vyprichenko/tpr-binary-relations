@@ -39,6 +39,25 @@ export default class Comparison {
         return this._value;
     }
 
+    getRelativeValue(variant: Variant) {
+        const median = (this.minValue + this.maxValue) / 2;
+        if (this.value < 0) {
+            return this.value;
+        }
+        if (variant == this.variant1) {
+            return this.value;
+        }
+        if (variant == this.variant2 && this.value > median) {
+            return this.value - this.maxValue;
+        }
+        if (variant == this.variant2 && this.value < median) {
+            return this.value + this.maxValue;
+        }
+        if (variant == this.variant2 && this.value == median) {
+            return this.value;
+        }
+    }
+
     valueOf() {
         if (this._value < 0) return 0;
         return this._value - 1;
@@ -63,4 +82,3 @@ export default class Comparison {
         );
     }
 }
-

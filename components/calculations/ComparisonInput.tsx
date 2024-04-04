@@ -1,10 +1,5 @@
 import { observer } from 'mobx-react-lite';
 import { styled } from '@mui/material/styles';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Rating, { IconContainerProps } from '@mui/material/Rating';
@@ -82,17 +77,9 @@ const ComparisonInput = ({
                     justifyContent: 'center'
                 }}
             >
-                {/* <ButtonGroup
-                    orientation="vertical"
-                    aria-label="Comparison"
-                    variant="text"
-                >
-                    <Button data-value="2">&gt;</Button>
-                    <Button data-value="1">≅</Button>
-                    <Button data-value="0">&lt;</Button>
-                </ButtonGroup> */}
                 <ComparisonRating
                     name="comparison"
+                    value={comparison.value + 1}
                     max={comparison.maxValue + 1}
                     IconContainerComponent={IconContainer}
                     highlightSelectedOnly

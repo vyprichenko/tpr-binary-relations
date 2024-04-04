@@ -14,6 +14,7 @@ import styles from './page.module.css';
 
 const Results = () => {
     const order = Model.calculateOrder();
+    const validation = Model.validateTriades();
     return (
         <>
             <Grid
@@ -22,11 +23,11 @@ const Results = () => {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={12}>
+                <Grid item xs={10}>
                     {Model.variants.length > 1 &&
                     Model.experts.length > 0 &&
                     order != undefined ? (
-                        <ResultsList sortBy={order} />
+                        <ResultsList sortBy={order} validation={validation} />
                     ) : (
                         <Alert severity="error">
                             Для порівняння необхідно не менше двох альтернатив.

@@ -8,11 +8,12 @@ import CalculationMethod from '@/types/CalculationMethod';
 import JobPosition from '@/types/JobPosition';
 import AcademicDegree from '@/types/AcademicDegree';
 import ExpertsWeights from '@/types/ExpertsWeights';
+import cartesianIterator from '@/utils/cartesianIterator';
 
 class Model {
     variantsLimit = 10;
 
-    expertsLimit = 10;
+    expertsLimit = 1;
 
     variants: Variant[] = [
         new Variant('Audi'),
@@ -25,7 +26,7 @@ class Model {
 
     experts: Expert[] = [
         new Expert(
-            'Layton Mclean',
+            'Dmytro Vyprichenko',
             5,
             JobPosition.LeadingEngeneer,
             AcademicDegree.NonDegreeSpecialist
@@ -41,6 +42,8 @@ class Model {
 
     calcMethod: CalculationMethod = CalculationMethod.Comparison;
 
+    private _comparisonsMatrix?: Comparison[][];
+
     constructor() {
         makeObservable(this, {
             variants: observable,
@@ -54,20 +57,16 @@ class Model {
             removeVariant: action,
             removeExpert: action
         });
-        // makePersistable(this, {
-        //     name: 'Lab123ModelStore',
-        //     properties: ['variants', 'experts'],
-        //     storage:
-        //         typeof window == 'undefined' ? undefined : window.localStorage
-        // });
     }
 
     get comparisonsMatrix() {
-        return this.experts.map((e) =>
+        if (this._comparisonsMatrix) return this._comparisonsMatrix;
+        this._comparisonsMatrix = this.experts.map((e) =>
             this.variants.flatMap((v1) =>
                 this.variants.map((v2) => new Comparison(v1, v2, e))
             )
         );
+        return this._comparisonsMatrix;
     }
 
     get weightsMatrix() {
@@ -89,8 +88,8 @@ class Model {
         );
     }
 
-    setCalcMethod(value: CalculationMethod) {
-        this.calcMethod = value;
+    get variantsTriades() {
+        return cartesianIterator([this.variants, this.variants, this.variants]);
     }
 
     addVariant(name: string, description: string = '') {
@@ -155,9 +154,55 @@ class Model {
                 .reduce((sum, cii) => (sum += cii.valueOf()), 0)
         );
     }
+
+    validateTriades() {
+        const comparisons = this.comparisonsMatrix[0];
+        return [
+            ...new Map(
+                [...this.variantsTriades]
+                    .filter((t) => t[0] != t[1] && t[1] != t[2] && t[2] != t[0])
+                    .map((t) =>
+                        t.sort((v1, v2) => {
+                            if (v1.name > v2.name) return 1;
+                            if (v1.name < v2.name) return -1;
+                            return 0;
+                        })
+                    )
+                    .map((t) => [`${t[0].id};${t[1].id};${t[2].id}`, t])
+            ).values()
+        ]
+            .map(([d1, d2, d3]) => {
+                const c1 = comparisons.find(
+                    (c) =>
+                        (c.variant1 == d1 && c.variant2 == d2) ||
+                        (c.variant1 == d2 && c.variant2 == d1)
+                );
+                const c2 = comparisons.find(
+                    (c) =>
+                        (c.variant1 == d2 && c.variant2 == d3) ||
+                        (c.variant1 == d3 && c.variant1 == d1)
+                );
+                const c3 = comparisons.find(
+                    (c) =>
+                        (c.variant1 == d1 && c.variant2 == d3) ||
+                        (c.variant1 == d3 && c.variant2 == d1)
+                );
+                const w1 = c1?.getRelativeValue(d1) ?? 0;
+                const w2 = c2?.getRelativeValue(d2) ?? 0;
+                const w3 = c3?.getRelativeValue(d1) ?? 0;
+
+                if (w1 == w2 && w1 != w3) {
+                    return `Оцінка ${d1}, ${d2}, ${d3} неузгоджена!`;
+                }
+                return null;
+            })
+            .reduce<string[]>((results, message) => {
+                if (message) results.push(message);
+                return results;
+            }, []);
+    }
 }
 
 const modelInstance = new Model();
 
 export default modelInstance;
-

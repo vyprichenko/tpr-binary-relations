@@ -33,7 +33,7 @@ const Variants = () => {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={12}>
+                <Grid item xs={10}>
                     {Model.variants.length > 0 ? (
                         <VariantList />
                     ) : (
@@ -44,7 +44,7 @@ const Variants = () => {
                 </Grid>
                 <Grid
                     item
-                    xs={12}
+                    xs={10}
                     sx={{ display: 'flex', justifyContent: 'center' }}
                 >
                     <Button
