@@ -8,6 +8,7 @@ import CalculationMethod from '@/types/CalculationMethod';
 import JobPosition from '@/types/JobPosition';
 import AcademicDegree from '@/types/AcademicDegree';
 import ExpertsWeights from '@/types/ExpertsWeights';
+import ValidationResult from '@/types/ValidationResult';
 import cartesianIterator from '@/utils/cartesianIterator';
 
 class Model {
@@ -88,6 +89,37 @@ class Model {
         return cartesianIterator([this.variants, this.variants, this.variants]);
     }
 
+    findComparisons(
+        expert: Expert,
+        variant1?: Variant,
+        variant2?: Variant,
+        strict?: boolean
+    ) {
+        if (variant1 || variant2)
+            return this.comparisonsMatrix
+                .flat()
+                .filter((c) => c.expert == expert)
+                .filter((c) => {
+                    if (variant2)
+                        return (
+                            (c.variant1 == variant1 &&
+                                c.variant2 == variant2) ||
+                            (c.variant1 == variant2 &&
+                                c.variant2 == variant1 &&
+                                !strict)
+                        );
+
+                    return (
+                        c.variant1 == variant1 ||
+                        (c.variant2 == variant1 && !strict)
+                    );
+                });
+        else
+            return this.comparisonsMatrix
+                .flat()
+                .filter((c) => c.expert == expert);
+    }
+
     addVariant(name: string, description: string = '') {
         if (this.variants.length >= this.variantsLimit) return;
 
@@ -124,23 +156,15 @@ class Model {
 
     setComparisonValue(comparison: Comparison, value: number | null) {
         const { variant1, variant2, expert } = comparison;
-        this.comparisonsMatrix
-            .flat()
-            .filter((c) => c.expert == expert)
-            .filter(
-                (c) =>
-                    (c.variant1 == variant1 && c.variant2 == variant2) ||
-                    (c.variant1 == variant2 && c.variant2 == variant1)
-            )
-            .forEach((c) => {
-                if (value === null) {
-                    c.value = null;
-                } else {
-                    c.variant1 == variant1
-                        ? (c.value = value)
-                        : (c.value = c.minValue + c.maxValue - value);
-                }
-            });
+        this.findComparisons(expert, variant1, variant2).forEach((c) => {
+            if (value === null) {
+                c.value = null;
+            } else {
+                c.variant1 == variant1
+                    ? (c.value = value)
+                    : (c.value = c.minValue + c.maxValue - value);
+            }
+        });
     }
 
     calculateOrder() {
@@ -151,12 +175,12 @@ class Model {
         );
     }
 
-    validateTriades() {
-        const comparisons = this.comparisonsMatrix[0];
+    validateTriades(expert: Expert) {
         return [
             ...new Map(
                 [...this.variantsTriades]
-                    .filter((t) => t[0] != t[1] && t[1] != t[2] && t[2] != t[0])
+                    // .filter((t) => t[0] != t[1] && t[1] != t[2] && t[2] != t[0])
+                    .filter(([c1, c2, c3]) => c1 != c2 && c2 != c3 && c1 != c3)
                     .map((t) =>
                         t.sort((v1, v2) => {
                             if (v1.name > v2.name) return 1;
@@ -167,32 +191,44 @@ class Model {
                     .map((t) => [`${t[0].id};${t[1].id};${t[2].id}`, t])
             ).values()
         ]
-            .map(([d1, d2, d3]) => {
-                const c1 = comparisons.find(
-                    (c) =>
-                        (c.variant1 == d1 && c.variant2 == d2) ||
-                        (c.variant1 == d2 && c.variant2 == d1)
-                );
-                const c2 = comparisons.find(
-                    (c) =>
-                        (c.variant1 == d2 && c.variant2 == d3) ||
-                        (c.variant1 == d3 && c.variant1 == d1)
-                );
-                const c3 = comparisons.find(
-                    (c) =>
-                        (c.variant1 == d1 && c.variant2 == d3) ||
-                        (c.variant1 == d3 && c.variant2 == d1)
-                );
-                const w1 = c1?.getRelativeValue(d1) ?? 0;
-                const w2 = c2?.getRelativeValue(d2) ?? 0;
-                const w3 = c3?.getRelativeValue(d1) ?? 0;
+            .map(([v1, v2, v3]): ValidationResult | null => {
+                // const c1 = comparisons.find(
+                //     (c) =>
+                //         (c.variant1 == d1 && c.variant2 == d2) ||
+                //         (c.variant1 == d2 && c.variant2 == d1)
+                // );
+                // const c2 = comparisons.find(
+                //     (c) =>
+                //         (c.variant1 == d2 && c.variant2 == d3) ||
+                //         (c.variant1 == d3 && c.variant1 == d1)
+                // );
+                // const c3 = comparisons.find(
+                //     (c) =>
+                //         (c.variant1 == d1 && c.variant2 == d3) ||
+                //         (c.variant1 == d3 && c.variant2 == d1)
+                // );
+                const c1 = this.findComparisons(expert, v1, v2, true)[0];
+                const c2 = this.findComparisons(expert, v2, v3, true)[0];
+                const c3 = this.findComparisons(expert, v1, v3, true)[0];
+                const w1 = c1?.getRelativeValue(v1) ?? 0;
+                const w2 = c2?.getRelativeValue(v2) ?? 0;
+                const w3 = c3?.getRelativeValue(v1) ?? 0;
 
-                if (w1 == w2 && w1 != w3) {
-                    return `Оцінка ${d1}, ${d2}, ${d3} неузгоджена!`;
+                if (w1 < 0 || w2 < 0 || w3 < 0) {
+                    return null;
                 }
-                return null;
+                if (w1 == w2 && w1 == w3) {
+                    return ['success', `Оцінка ${c1}, ${c2}, ${c3} узгоджена.`];
+                }
+                if (w1 == w2 && w1 != w3) {
+                    return ['error', `Оцінка ${c1}, ${c2}, ${c3} неузгоджена!`];
+                }
+                return [
+                    undefined,
+                    `Транзитивність ${c1}, ${c2} не можна перевірити.`
+                ];
             })
-            .reduce<string[]>((results, message) => {
+            .reduce<ValidationResult[]>((results, message) => {
                 if (message) results.push(message);
                 return results;
             }, []);

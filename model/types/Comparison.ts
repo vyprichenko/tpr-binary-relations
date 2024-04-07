@@ -63,6 +63,18 @@ export default class Comparison {
         return this._value - 1;
     }
 
+    toString() {
+        switch (this.value) {
+            case 0:
+                return `${this.variant1} < ${this.variant2}`;
+            case 1:
+                return `${this.variant1} ≅ ${this.variant2}`;
+            case 2:
+                return `${this.variant1} > ${this.variant2}`;
+        }
+        return '';
+    }
+
     toStringValue() {
         if (this.variant1 == this.variant2) {
             return '0';

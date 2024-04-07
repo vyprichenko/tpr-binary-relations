@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
 import { observer } from 'mobx-react-lite';
-import Typography from '@mui/material/Typography';
 import { blueGrey } from '@mui/material/colors';
 import { blue } from '@mui/material/colors';
 import Model from '@/model/Model';
 import Comparison from '@/model/types/Comparison';
+import VariantLabel from '@/components/VariantLabel';
 
 const GridSpan = ({
     children,
@@ -41,11 +41,9 @@ const ComparisonMatrix = ({
             }}
         >
             <GridSpan fill>–</GridSpan>
-            {variants.map((v, vi) => (
+            {variants.map((v) => (
                 <GridSpan key={v.id} fill>
-                    <i>
-                        d<sub>{vi + 1}</sub>
-                    </i>
+                    <VariantLabel variant={v} />
                 </GridSpan>
             ))}
             <GridSpan fill>
@@ -60,9 +58,7 @@ const ComparisonMatrix = ({
                         <React.Fragment key={`matrix_comp_${c.id}`}>
                             {ci == 0 ? (
                                 <GridSpan fill>
-                                    <i>
-                                        d<sub>{vi + 1}</sub>
-                                    </i>
+                                    <VariantLabel variant={v} />
                                 </GridSpan>
                             ) : null}
                             <GridSpan>{c.toStringValue()}</GridSpan>
@@ -85,4 +81,3 @@ const ComparisonMatrix = ({
 };
 
 export default observer(ComparisonMatrix);
-

@@ -1,22 +1,15 @@
-import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
 import ClearIcon from '@mui/icons-material/Clear';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Variant from '@/model/types/Variant';
 import Model from '@/model/Model';
+import VariantLabel from '@/components/VariantLabel';
 
-const VariantListItem = ({
-    variant,
-    index
-}: {
-    variant: Variant;
-    index: number;
-}): JSX.Element => (
-    <Card key={variant.id} sx={{ mb: 2 }}>
+const VariantListItem = ({ variant }: { variant: Variant }): JSX.Element => (
+    <Card key={variant.id}>
         <CardHeader
+            avatar={<VariantLabel variant={variant} />}
             title={variant.toString()}
             titleTypographyProps={{ variant: 'body1' }}
             action={

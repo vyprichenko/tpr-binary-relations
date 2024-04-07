@@ -1,20 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react-lite';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import Navigation from '@/components/Navigation';
 import ResultsList from '@/components/results/ResultsList';
 import Model from '@/model/Model';
-import styles from './page.module.css';
 
 const Results = () => {
     const order = Model.calculateOrder();
-    const validation = Model.validateTriades();
+    const validation = Model.validateTriades(Model.experts[0]);
     return (
         <>
             <Grid

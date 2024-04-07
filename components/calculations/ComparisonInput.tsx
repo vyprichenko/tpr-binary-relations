@@ -4,12 +4,13 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Rating, { IconContainerProps } from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
+import { deepOrange } from '@mui/material/colors';
 import DragHandleSharpIcon from '@mui/icons-material/DragHandleSharp';
 import KeyboardArrowLeftSharpIcon from '@mui/icons-material/KeyboardArrowLeftSharp';
 import KeyboardArrowRightSharpIcon from '@mui/icons-material/KeyboardArrowRightSharp';
 import Model from '@/model/Model';
 import Comparison from '@/model/types/Comparison';
-import { AnyCnameRecord } from 'dns';
+import VariantLabel from '@/components/VariantLabel';
 
 const VariantPaper = styled(Paper)(({ theme }) => ({
     ...theme.typography.body1,
@@ -25,6 +26,12 @@ const VariantPaper = styled(Paper)(({ theme }) => ({
 
 const ComparisonRating = styled(Rating)(({ theme }) => ({
     '& .MuiRating-iconEmpty': {
+        color: theme.palette.action.disabled
+    },
+    '& .MuiRating-iconFilled': {
+        color: deepOrange[400]
+    },
+    '& .MuiRating-iconHover': {
         color: theme.palette.action.disabled
     }
 }));
@@ -58,12 +65,7 @@ const ComparisonInput = ({
         >
             <Grid item xs={4}>
                 <VariantPaper>
-                    <i>
-                        d
-                        <sub>
-                            {Model.variants.indexOf(comparison.variant1) + 1}
-                        </sub>
-                    </i>
+                    <VariantLabel variant={comparison.variant1} />
                     <Typography fontSize="large">
                         {comparison.variant1.toString()}
                     </Typography>
@@ -88,31 +90,14 @@ const ComparisonInput = ({
             </Grid>
             <Grid item xs={4}>
                 <VariantPaper>
-                    <i>
-                        d
-                        <sub>
-                            {Model.variants.indexOf(comparison.variant2) + 1}
-                        </sub>
-                    </i>
+                    <VariantLabel variant={comparison.variant2} />
                     <Typography fontSize="large">
                         {comparison.variant2.toString()}
                     </Typography>
                 </VariantPaper>
             </Grid>
-            {/* <Grid item xs={12}>
-                <Slider
-                    aria-label="comparison"
-                    marks
-                    value={comparison.value}
-                    step={1}
-                    min={comparison.minValue}
-                    max={comparison.maxValue}
-                    onChange={handleChange}
-                />
-            </Grid> */}
         </Grid>
     );
 };
 
 export default observer(ComparisonInput);
-
