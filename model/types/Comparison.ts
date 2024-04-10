@@ -63,14 +63,14 @@ export default class Comparison {
         return this._value - 1;
     }
 
-    toString() {
+    toString(name1?: string, name2?: string) {
         switch (this.value) {
             case 0:
-                return `${this.variant1} < ${this.variant2}`;
+                return `${name1 ?? this.variant1} < ${name2 ?? this.variant2}`;
             case 1:
-                return `${this.variant1} ≅ ${this.variant2}`;
+                return `${name1 ?? this.variant1} ≅ ${name2 ?? this.variant2}`;
             case 2:
-                return `${this.variant1} > ${this.variant2}`;
+                return `${name1 ?? this.variant1} > ${name2 ?? this.variant2}`;
         }
         return '';
     }

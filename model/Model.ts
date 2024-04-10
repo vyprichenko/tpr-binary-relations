@@ -1,5 +1,4 @@
 import { makeObservable, observable, computed, action, flow } from 'mobx';
-import { makePersistable } from 'mobx-persist-store';
 import Variant from '@/model/types/Variant';
 import Expert from '@/model/types/Expert';
 import Comparison from '@/model/types/Comparison';
@@ -14,7 +13,7 @@ import cartesianIterator from '@/utils/cartesianIterator';
 class Model {
     variantsLimit = 10;
 
-    expertsLimit = 1;
+    expertsLimit = 5;
 
     variants: Variant[] = [
         new Variant('Audi'),
@@ -27,8 +26,8 @@ class Model {
 
     experts: Expert[] = [
         new Expert(
-            'Dmytro Vyprichenko',
-            5,
+            'Fabrice Bellard',
+            25,
             JobPosition.LeadingEngeneer,
             AcademicDegree.NonDegreeSpecialist
         )
@@ -50,12 +49,18 @@ class Model {
             calcMethod: observable,
             expertsWeights: computed,
             comparisonsMatrix: computed,
+            variantsTriades: computed,
+            variantsMap: computed,
             weightsMatrix: computed,
             addVariant: action,
             addExpert: action,
             removeVariant: action,
             removeExpert: action
         });
+    }
+
+    get variantsMap() {
+        return new Map(this.variants.map((v, i) => [v, i]));
     }
 
     get comparisonsMatrix() {
@@ -176,57 +181,48 @@ class Model {
     }
 
     validateTriades(expert: Expert) {
+        const { variantsMap, variantsTriades } = this;
         return [
             ...new Map(
-                [...this.variantsTriades]
-                    // .filter((t) => t[0] != t[1] && t[1] != t[2] && t[2] != t[0])
-                    .filter(([c1, c2, c3]) => c1 != c2 && c2 != c3 && c1 != c3)
+                [...variantsTriades]
+                    .filter(([v1, c2, v3]) => v1 != c2 && c2 != v3 && v1 != v3)
                     .map((t) =>
-                        t.sort((v1, v2) => {
-                            if (v1.name > v2.name) return 1;
-                            if (v1.name < v2.name) return -1;
-                            return 0;
-                        })
+                        t.sort(
+                            (v1, v2) =>
+                                (variantsMap.get(v1) ?? -1) -
+                                (variantsMap.get(v2) ?? -1)
+                        )
                     )
                     .map((t) => [`${t[0].id};${t[1].id};${t[2].id}`, t])
             ).values()
         ]
             .map(([v1, v2, v3]): ValidationResult | null => {
-                // const c1 = comparisons.find(
-                //     (c) =>
-                //         (c.variant1 == d1 && c.variant2 == d2) ||
-                //         (c.variant1 == d2 && c.variant2 == d1)
-                // );
-                // const c2 = comparisons.find(
-                //     (c) =>
-                //         (c.variant1 == d2 && c.variant2 == d3) ||
-                //         (c.variant1 == d3 && c.variant1 == d1)
-                // );
-                // const c3 = comparisons.find(
-                //     (c) =>
-                //         (c.variant1 == d1 && c.variant2 == d3) ||
-                //         (c.variant1 == d3 && c.variant2 == d1)
-                // );
                 const c1 = this.findComparisons(expert, v1, v2, true)[0];
                 const c2 = this.findComparisons(expert, v2, v3, true)[0];
                 const c3 = this.findComparisons(expert, v1, v3, true)[0];
                 const w1 = c1?.getRelativeValue(v1) ?? 0;
                 const w2 = c2?.getRelativeValue(v2) ?? 0;
                 const w3 = c3?.getRelativeValue(v1) ?? 0;
+                // prettier-ignore
+                const n1 = `<i>d</i><sub>${(variantsMap.get(v1) ?? -1) + 1}</sub>`;
+                // prettier-ignore
+                const n2 = `<i>d</i><sub>${(variantsMap.get(v2) ?? -1) + 1}</sub>`;
+                // prettier-ignore
+                const n3 = `<i>d</i><sub>${(variantsMap.get(v3) ?? -1) + 1}</sub>`;
 
                 if (w1 < 0 || w2 < 0 || w3 < 0) {
                     return null;
                 }
                 if (w1 == w2 && w1 == w3) {
-                    return ['success', `Оцінка ${c1}, ${c2}, ${c3} узгоджена.`];
+                    // prettier-ignore
+                    return ['success', `Оцінка ${c1.toString(n1, n2)}, ${c2.toString(n2, n3)}, ${c3.toString(n1, n3)} узгоджена.`];
                 }
                 if (w1 == w2 && w1 != w3) {
-                    return ['error', `Оцінка ${c1}, ${c2}, ${c3} неузгоджена!`];
+                    // prettier-ignore
+                    return ['error', `Оцінка ${c1.toString(n1, n2)}, ${c2.toString(n2, n3)}, ${c3.toString(n1, n3)} неузгоджена!`];
                 }
-                return [
-                    undefined,
-                    `Транзитивність ${c1}, ${c2} не можна перевірити.`
-                ];
+                // prettier-ignore
+                return ['info', `Транзитивність ${c1.toString(n1, n2)}, ${c2.toString(n2, n3)} не можна перевірити.`];
             })
             .reduce<ValidationResult[]>((results, message) => {
                 if (message) results.push(message);

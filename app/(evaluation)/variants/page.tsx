@@ -11,7 +11,6 @@ import Navigation from '@/components/Navigation';
 import VariantList from '@/components/variants/VariantList';
 import VariantDialog from '@/components/variants/VariantDialog';
 import Model from '@/model/Model';
-import styles from './page.module.css';
 
 const Variants = () => {
     const router = useRouter();

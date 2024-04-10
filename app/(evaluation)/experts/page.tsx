@@ -10,7 +10,6 @@ import Navigation from '@/components/Navigation';
 import ExpertCard from '@/components/experts/ExpertCard';
 import ExpertDialog from '@/components/experts/ExpertDialog';
 import Model from '@/model/Model';
-import styles from './page.module.css';
 
 const Experts = () => {
     const router = useRouter();
@@ -26,21 +25,30 @@ const Experts = () => {
 
     return (
         <>
-            <Grid container spacing={4}>
+            <Grid container spacing={4} justifyContent="center">
                 {Model.experts.length > 0 ? (
-                    Model.experts.map((expert) => (
-                        <Grid item key={expert.id} xs={12} sm={6}>
-                            <ExpertCard expert={expert} />
-                        </Grid>
-                    ))
+                    <Grid
+                        item
+                        container
+                        xs={10}
+                        sx={{ mb: 3 }}
+                        spacing={3}
+                        alignItems="center"
+                    >
+                        {Model.experts.map((expert) => (
+                            <Grid item key={expert.id} xs={12} sm={6}>
+                                <ExpertCard expert={expert} />
+                            </Grid>
+                        ))}
+                    </Grid>
                 ) : (
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Alert severity="info">Запросіть експертів.</Alert>
                     </Grid>
                 )}
                 <Grid
                     item
-                    xs={12}
+                    xs={10}
                     sx={{ display: 'flex', justifyContent: 'center' }}
                 >
                     <Button
