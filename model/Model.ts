@@ -215,14 +215,14 @@ class Model {
                 }
                 if (w1 == w2 && w1 == w3) {
                     // prettier-ignore
-                    return ['success', `Оцінка ${c1.toString(n1, n2)}, ${c2.toString(n2, n3)}, ${c3.toString(n1, n3)} узгоджена.`];
+                    return ['success', `${c1.toString(n1, n2)}, ${c2.toString(n2, n3)} ⇒ ${c3.toString(n1, n3)} — оцінка узгоджена.`];
                 }
                 if (w1 == w2 && w1 != w3) {
                     // prettier-ignore
-                    return ['error', `Оцінка ${c1.toString(n1, n2)}, ${c2.toString(n2, n3)}, ${c3.toString(n1, n3)} неузгоджена!`];
+                    return ['error', `${c1.toString(n1, n2)}, ${c2.toString(n2, n3)} ⇒ ${c3.toString(n1, n3)} — оцінка неузгоджена!`];
                 }
                 // prettier-ignore
-                return ['info', `Транзитивність ${c1.toString(n1, n2)}, ${c2.toString(n2, n3)} не можна перевірити.`];
+                return ['info', `Транзитивність відношення ${c1.toString(n1, n2)}, ${c2.toString(n2, n3)} не можна перевірити.`];
             })
             .reduce<ValidationResult[]>((results, message) => {
                 if (message) results.push(message);
