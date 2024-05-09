@@ -1,28 +1,20 @@
 import { observer } from 'mobx-react-lite';
 import { styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import Rating, { IconContainerProps } from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
 import { deepOrange } from '@mui/material/colors';
 import DragHandleSharpIcon from '@mui/icons-material/DragHandleSharp';
 import KeyboardArrowLeftSharpIcon from '@mui/icons-material/KeyboardArrowLeftSharp';
 import KeyboardArrowRightSharpIcon from '@mui/icons-material/KeyboardArrowRightSharp';
+import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
+import Button from '@mui/material/Button';
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import Model from '@/model/Model';
 import Comparison from '@/model/types/Comparison';
 import VariantLabel from '@/components/VariantLabel';
-
-const VariantPaper = styled(Paper)(({ theme }) => ({
-    ...theme.typography.body1,
-    display: 'flex',
-    gap: 5,
-    padding: theme.spacing(2),
-    textAlign: 'center',
-    '& > p': {
-        flexGrow: 1,
-        textAlign: 'center'
-    }
-}));
+import VariantPaper from '@/components/VariantPaper';
 
 const ComparisonRating = styled(Rating)(({ theme }) => ({
     '& .MuiRating-iconEmpty': {
@@ -31,8 +23,19 @@ const ComparisonRating = styled(Rating)(({ theme }) => ({
     '& .MuiRating-iconFilled': {
         color: deepOrange[400]
     },
-    '& .MuiRating-iconHover': {
-        color: theme.palette.action.disabled
+    '& .MuiRating-iconActive': {
+        color: deepOrange[400]
+    }
+}));
+
+const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+        backgroundColor: theme.palette.common.white,
+        color: 'rgba(0, 0, 0, 0.87)',
+        boxShadow: theme.shadows[1],
+        fontSize: 14
     }
 }));
 
@@ -55,6 +58,9 @@ const ComparisonInput = ({
         Model.setComparisonValue(comparison, value ? value - 1 : null);
     };
 
+    const variantName1 = comparison.variant1.toString();
+    const variantName2 = comparison.variant2.toString();
+
     return (
         <Grid
             container
@@ -64,11 +70,19 @@ const ComparisonInput = ({
             alignItems="center"
         >
             <Grid item xs={4}>
-                <VariantPaper>
+                <VariantPaper sx={{ alignItems: 'center' }}>
                     <VariantLabel variant={comparison.variant1} />
-                    <Typography fontSize="large">
-                        {comparison.variant1.toString()}
-                    </Typography>
+                    {variantName1.length <= 12 ? (
+                        <Typography fontSize="large">{variantName1}</Typography>
+                    ) : (
+                        <LightTooltip title={variantName1}>
+                            <span style={{ flexGrow: 1 }}>
+                                <Button disabled sx={{ flexGrow: 1 }}>
+                                    <MoreHorizOutlinedIcon fontSize="medium" />
+                                </Button>
+                            </span>
+                        </LightTooltip>
+                    )}
                 </VariantPaper>
             </Grid>
             <Grid
@@ -89,11 +103,19 @@ const ComparisonInput = ({
                 />
             </Grid>
             <Grid item xs={4}>
-                <VariantPaper>
+                <VariantPaper sx={{ alignItems: 'center' }}>
                     <VariantLabel variant={comparison.variant2} />
-                    <Typography fontSize="large">
-                        {comparison.variant2.toString()}
-                    </Typography>
+                    {variantName2.length <= 12 ? (
+                        <Typography fontSize="large">{variantName2}</Typography>
+                    ) : (
+                        <LightTooltip title={variantName2}>
+                            <span style={{ flexGrow: 1 }}>
+                                <Button disabled>
+                                    <MoreHorizOutlinedIcon fontSize="medium" />
+                                </Button>
+                            </span>
+                        </LightTooltip>
+                    )}
                 </VariantPaper>
             </Grid>
         </Grid>

@@ -1,4 +1,5 @@
-import { makeObservable, observable, computed, action, flow } from 'mobx';
+import { makeObservable, observable, computed, action } from 'mobx';
+import zip from 'lodash.zip';
 import Variant from '@/model/types/Variant';
 import Expert from '@/model/types/Expert';
 import Comparison from '@/model/types/Comparison';
@@ -15,27 +16,34 @@ class Model {
 
     expertsLimit = 5;
 
+    // prettier-ignore
     variants: Variant[] = [
-        new Variant('Audi'),
-        new Variant('Nissan'),
-        new Variant('Great Wall'),
-        new Variant('Hyundai'),
-        new Variant('Jeep'),
-        new Variant('Lancia')
+        new Variant('Використання IT студентами для презентації матеріалів, тем на заняттях'),
+        new Variant('Використання IT студентами для розвитку навичок мислення високого рівня'),
+        new Variant('Використання IT студентами для пошуку інформації, щоб підготувати завдання'),
+        new Variant('Використання IT студентами для самостійних навчальних досліджень'),
+        new Variant('Використання IT студентами для спілкування та розваг'),
+        new Variant('Використання IT студентами для проведення дозвілля, показу фільмів, перегляду фото тощо')
     ];
 
     experts: Expert[] = [
         new Expert(
             'Fabrice Bellard',
-            25,
+            1,
+            0.3,
+            0.5,
+            0.1,
+            0.05,
             JobPosition.LeadingEngeneer,
             AcademicDegree.NonDegreeSpecialist
         )
     ];
 
+    currentExpert: Expert | null = this.experts[0] ?? null;
+
     steps: { link: string; label: string }[] = [
         { label: 'Альтернативи', link: '/variants' },
-        // { label: 'Експерти', link: '/experts' },
+        { label: 'Експерти', link: '/experts' },
         { label: 'Порівняння', link: '/calculations' },
         { label: 'Результат', link: '/results' }
     ];
@@ -46,6 +54,7 @@ class Model {
         makeObservable(this, {
             variants: observable,
             experts: observable,
+            currentExpert: observable,
             calcMethod: observable,
             expertsWeights: computed,
             comparisonsMatrix: computed,
@@ -59,10 +68,17 @@ class Model {
         });
     }
 
+    /**
+     * Перелік альтернатив з їх порядковими номерами.
+     */
     get variantsMap() {
         return new Map(this.variants.map((v, i) => [v, i]));
     }
 
+    /**
+     * Матриця порівнянь альтернатив.
+     * Для кожного експерта формується масив об'єктів Comparison.
+     */
     get comparisonsMatrix() {
         return this.experts.map((e) =>
             this.variants.flatMap((v1) =>
@@ -71,12 +87,18 @@ class Model {
         );
     }
 
+    /**
+     * Матриця зважених експертних оцінок.
+     */
     get weightsMatrix() {
         return this.experts.map((e) =>
             this.variants.map((v) => new Weight(v, e))
         );
     }
 
+    /**
+     * Ваги (впливовість) експертів.
+     */
     get expertsWeights() {
         const totalWeight = this.experts.reduce(
             (summ, expert) => (summ += expert.weight),
@@ -90,10 +112,22 @@ class Model {
         );
     }
 
+    /**
+     * Розміщення (комбінації) варіантів в кортежах по три елементи.
+     * @returns всі можливі розміщення (варіанти в них можуть повторюватись).
+     */
     get variantsTriades() {
         return cartesianIterator([this.variants, this.variants, this.variants]);
     }
 
+    /**
+     * Знаходить об'єкт порівняння по заданим параметрам.
+     *
+     * @param expert - експерт, що виконує порівняння.
+     * @param variant1 - перша альтернатива у порівнянні.
+     * @param variant2 - друга альтернатива у порівнянні.
+     * @param strict - чи враховувати порядок варіантів.
+     */
     findComparisons(
         expert: Expert,
         variant1?: Variant,
@@ -125,6 +159,12 @@ class Model {
                 .filter((c) => c.expert == expert);
     }
 
+    /**
+     * Створює новий об'єкт альтернативи.
+     *
+     * @param name - назва альтернативи.
+     * @param description - опис альтернативи.
+     */
     addVariant(name: string, description: string = '') {
         if (this.variants.length >= this.variantsLimit) return;
 
@@ -134,31 +174,52 @@ class Model {
         }
     }
 
+    /**
+     * Видаляє об'єкт порівняння.
+     */
     removeVariant(value: Variant) {
         this.variants = this.variants.filter((v) => v != value);
     }
 
+    /**
+     * Додає експерта.
+     *
+     * @param name
+     * @param experience
+     * @param jobPosition
+     * @param academicDegree
+     */
     addExpert(
         name: string,
+        knowlege: number,
+        theory: number,
         experience: number,
-        jobPosition: JobPosition,
-        academicDegree: AcademicDegree
+        literature: number,
+        intuition: number
     ) {
         if (this.experts.length >= this.expertsLimit) return;
 
         const expert = new Expert(
             name,
+            knowlege,
+            theory,
             experience,
-            jobPosition,
-            academicDegree
+            literature,
+            intuition
         );
         this.experts.push(expert);
     }
 
+    /**
+     * Видаляє експерта.
+     */
     removeExpert(value: Expert) {
         this.experts = this.experts.filter((v) => v != value);
     }
 
+    /**
+     * Надає оцінку порівнянню.
+     */
     setComparisonValue(comparison: Comparison, value: number | null) {
         const { variant1, variant2, expert } = comparison;
         this.findComparisons(expert, variant1, variant2).forEach((c) => {
@@ -172,14 +233,38 @@ class Model {
         });
     }
 
-    calculateOrder() {
+    /**
+     * Повертає масив оцінок порівнянь згідно порядку альтернатив.
+     */
+    calculateOrder(expert: Expert) {
         return this.variants.map((v) =>
-            this.comparisonsMatrix[0]
+            this.comparisonsMatrix[this.experts.indexOf(expert)]
                 .filter(({ variant1 }) => variant1 == v)
                 .reduce((sum, cii) => (sum += cii.valueOf()), 0)
         );
     }
 
+    /**
+     * Повертає масив ваг альтернатив з урахуванням коефіцієнта значущості експерта.
+     */
+    calculateWeights(expert?: Expert): number[] {
+        if (expert)
+            return this.variants.map((v) =>
+                this.weightsMatrix[this.experts.indexOf(expert)]
+                    .filter(({ variant }) => variant == v)
+                    .reduce((sum, wei) => (sum += wei.valueOf()), 0)
+            );
+
+        return zip(...this.experts.map((e) => this.calculateWeights(e))).map(
+            (col) =>
+                col.reduce<number>((sum, wei) => (sum += wei ?? 0), 0) /
+                this.experts.length
+        );
+    }
+
+    /**
+     * Виконує перевірку порівнянь на несуперечливість.
+     */
     validateTriades(expert: Expert) {
         const { variantsMap, variantsTriades } = this;
         return [

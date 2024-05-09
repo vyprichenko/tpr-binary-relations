@@ -1,3 +1,4 @@
+import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Box from '@mui/material/Box';
 import Model from '@/model/Model';
@@ -16,13 +17,13 @@ const ComparisonsEquation = ({ sortBy }: { sortBy: number[] }): JSX.Element => (
                     else sign = ' ≅ ';
                 }
                 return (
-                    <>
+                    <React.Fragment key={i}>
                         {sign}
                         <i>d</i>
                         <small>
                             <sub>{vi + 1}</sub>
                         </small>
-                    </>
+                    </React.Fragment>
                 );
             })}
     </Box>

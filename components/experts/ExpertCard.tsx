@@ -55,15 +55,16 @@ const ExpertCard = ({ expert }: { expert: Expert }): JSX.Element => {
                     </IconButton>
                 }
                 title={expert.toString()}
-                subheader={expert.academicDegree.toString()}
+                // subheader={expert.academicDegree.toString()}
             />
             <CardContent>
-                <Typography variant="body2" color="text.secondary">
+                {/* <Typography variant="body2" color="text.secondary">
                     {`Займає посаду "${expert.jobPosition}", досвід роботи ${experience}.`}
-                </Typography>
-                <Typography variant="body2" color="text.primary" sx={{ mt: 2 }}>
-                    {`Вага оцінки: ${Number(
-                        Model.expertsWeights[expert.id].toFixed(2)
+                </Typography> */}
+                <Typography variant="body2" color="text.primary">
+                    {`Компетентність: ${Number(
+                        // Model.expertsWeights[expert.id].toFixed(2)
+                        expert.weight.toFixed(2)
                     )}`}
                 </Typography>
             </CardContent>

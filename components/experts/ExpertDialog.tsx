@@ -2,6 +2,8 @@ import { useState, ChangeEvent, SyntheticEvent } from 'react';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Rating from '@mui/material/Rating';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -11,6 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 import Model from '@/model/Model';
 import JobPosition from '@/types/JobPosition';
 import AcademicDegree from '@/types/AcademicDegree';
@@ -23,40 +26,33 @@ const ExpertDialog = ({
     isOpen: boolean;
     onClose: () => void;
 }): JSX.Element => {
-    const defaultJob = JobPosition.LeadingEngeneer;
-    const defaultDegree = AcademicDegree.NonDegreeSpecialist;
     const [name, setName] = useState(Expert.generateName());
-    const [exp, setExp] = useState(1);
-    const [job, setJob] = useState<JobPosition>(defaultJob);
-    const [degree, setDegree] = useState<AcademicDegree>(defaultDegree);
+    const [knowlege, setKnowlege] = useState(0);
+    const [theory, setTheory] = useState(0);
+    const [experience, setExperience] = useState(0);
+    const [literature, setLiterature] = useState(0);
+    const [intuition, setIntuition] = useState(0);
 
     const handleNameChange = (e: ChangeEvent) => {
         setName((e.target as HTMLInputElement).value);
-    };
-
-    const handleExpChange = (e: ChangeEvent) => {
-        setExp(+(e.target as HTMLInputElement).value);
-    };
-
-    const handleJobChange = (e: SelectChangeEvent) => {
-        setJob(e.target.value as JobPosition);
-    };
-
-    const handleDegreeChange = (e: SelectChangeEvent) => {
-        setDegree(e.target.value as AcademicDegree);
     };
 
     const handleSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
         Model.addExpert(
             name,
-            exp,
-            job as JobPosition,
-            degree as AcademicDegree
+            knowlege,
+            theory,
+            experience,
+            literature,
+            intuition
         );
         setName('');
-        setJob(defaultJob);
-        setDegree(defaultDegree);
+        setKnowlege(0);
+        setTheory(0);
+        setExperience(0);
+        setLiterature(0);
+        setIntuition(0);
         onClose();
     };
 
@@ -85,70 +81,131 @@ const ExpertDialog = ({
                                 onChange={handleNameChange}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <FormControl
-                                variant="standard"
-                                sx={{ width: '100%' }}
-                            >
-                                <InputLabel id="exp-job-position-label">
-                                    Посада
-                                </InputLabel>
-                                <Select
-                                    labelId="exp-job-position-label"
-                                    value={job}
-                                    onChange={handleJobChange}
-                                    label="jobPosition"
-                                >
-                                    {Object.entries(JobPosition).map(
-                                        ([key, value]) => (
-                                            <MenuItem key={key} value={value}>
-                                                {value}
-                                            </MenuItem>
-                                        )
-                                    )}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <FormControl
-                                variant="standard"
-                                sx={{ width: '100%' }}
-                            >
-                                <InputLabel id="exp-job-academic-degree">
-                                    Науковий ступінь
-                                </InputLabel>
-                                <Select
-                                    labelId="exp-job-academic-degree"
-                                    value={degree}
-                                    onChange={handleDegreeChange}
-                                    label="academicDegree"
-                                >
-                                    {Object.entries(AcademicDegree).map(
-                                        ([key, value]) => (
-                                            <MenuItem key={key} value={value}>
-                                                {value}
-                                            </MenuItem>
-                                        )
-                                    )}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                margin="dense"
-                                label="Досвід роботи (років)"
-                                type="number"
-                                fullWidth
-                                variant="standard"
-                                value={exp}
-                                inputProps={{
-                                    inputMode: 'numeric',
-                                    pattern: '[0-9]*',
-                                    min: 1,
-                                    max: 99
+                        <Grid item xs={12} justifyContent="center">
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                alignItems="center"
+                                sx={{
+                                    mb: 2,
+                                    '& > legend': { mt: 2 }
                                 }}
-                                onChange={handleExpChange}
-                            />
+                            >
+                                <Typography component="legend">
+                                    Ступінь знайомства з проблемою
+                                </Typography>
+                                <Rating
+                                    name="knowlege"
+                                    size="large"
+                                    precision={0.5}
+                                    value={knowlege * 10}
+                                    onChange={(e, value) => {
+                                        setKnowlege((value ?? 0) / 10);
+                                    }}
+                                />
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl
+                                variant="standard"
+                                sx={{ width: '100%' }}
+                            >
+                                <InputLabel id="expert-theory">
+                                    Теоретичний аналіз
+                                </InputLabel>
+                                <Select
+                                    labelId="expert-theory"
+                                    value={
+                                        theory ? theory.toString() : undefined
+                                    }
+                                    onChange={(e: SelectChangeEvent) => {
+                                        setTheory(+e.target.value);
+                                    }}
+                                    label="theory"
+                                >
+                                    <MenuItem value="0.3">Високий</MenuItem>
+                                    <MenuItem value="0.2">Середній</MenuItem>
+                                    <MenuItem value="0.1">Низький</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl
+                                variant="standard"
+                                sx={{ width: '100%' }}
+                            >
+                                <InputLabel id="expert-experience">
+                                    Досвід роботи
+                                </InputLabel>
+                                <Select
+                                    labelId="expert-experience"
+                                    value={
+                                        experience
+                                            ? experience.toString()
+                                            : undefined
+                                    }
+                                    onChange={(e: SelectChangeEvent) => {
+                                        setExperience(+e.target.value);
+                                    }}
+                                    label="experience"
+                                >
+                                    <MenuItem value="0.5">Високий</MenuItem>
+                                    <MenuItem value="0.4">Середній</MenuItem>
+                                    <MenuItem value="0.2">Низький</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl
+                                variant="standard"
+                                sx={{ width: '100%' }}
+                            >
+                                <InputLabel id="expert-literature">
+                                    Література
+                                </InputLabel>
+                                <Select
+                                    labelId="expert-literature"
+                                    value={
+                                        literature
+                                            ? literature.toString()
+                                            : undefined
+                                    }
+                                    onChange={(e: SelectChangeEvent) => {
+                                        setLiterature(+e.target.value);
+                                    }}
+                                    label="literature"
+                                >
+                                    <MenuItem value="0.1">Високий</MenuItem>
+                                    <MenuItem value="0.08">Середній</MenuItem>
+                                    <MenuItem value="0.04">Низький</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl
+                                variant="standard"
+                                sx={{ width: '100%' }}
+                            >
+                                <InputLabel id="expert-intuition">
+                                    Інтуїція
+                                </InputLabel>
+                                <Select
+                                    labelId="expert-intuition"
+                                    value={
+                                        intuition
+                                            ? intuition.toString()
+                                            : undefined
+                                    }
+                                    onChange={(e: SelectChangeEvent) => {
+                                        setIntuition(+e.target.value);
+                                    }}
+                                    label="intuition"
+                                >
+                                    <MenuItem value="0.05">Високий</MenuItem>
+                                    <MenuItem value="0.04">Середній</MenuItem>
+                                    <MenuItem value="0.02">Низький</MenuItem>
+                                </Select>
+                            </FormControl>
                         </Grid>
                     </Grid>
                 </DialogContent>

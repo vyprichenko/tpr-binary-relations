@@ -14,8 +14,8 @@ const RowRadioButtonsGroup = () => {
     };
 
     return (
-        <FormControl>
-            {/* <FormLabel id="cm-group-label">Метод порівняння</FormLabel> */}
+        <FormControl variant="standard">
+            <FormLabel id="cm-group-label">Метод порівняння</FormLabel>
             <RadioGroup
                 row
                 aria-labelledby="cm-group-label"
@@ -25,12 +25,12 @@ const RowRadioButtonsGroup = () => {
             >
                 <FormControlLabel
                     value={CalculationMethod.Comparison}
-                    control={<Radio />}
+                    control={<Radio size="small" />}
                     label="Парне порівняння"
                 />
                 <FormControlLabel
                     value={CalculationMethod.Weight}
-                    control={<Radio />}
+                    control={<Radio size="small" />}
                     label="Зважування"
                 />
             </RadioGroup>

@@ -6,18 +6,31 @@ import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 
 import Navigation from '@/components/Navigation';
+import ExpertSelect from '@/components/calculations/ExpertSelect';
 import ResultsList from '@/components/results/ResultsList';
 import ComparisonsEquation from '@/components/results/ComparisonsEquation';
 import ComparisonMatrix from '@/components/calculations/ComparisonMatrix';
 import Model from '@/model/Model';
+import CalculationMethod from '@/types/CalculationMethod';
 
 const WhiteAlert = styled(Alert)({
     backgroundColor: '#fff'
 });
 
 const Results = () => {
-    const order = Model.calculateOrder();
-    const validation = Model.validateTriades(Model.experts[0]);
+    const currentExpert =
+        Model.calcMethod == CalculationMethod.Comparison
+            ? Model.currentExpert
+            : null;
+
+    const order = currentExpert
+        ? Model.calculateOrder(currentExpert)
+        : Model.calculateWeights();
+
+    const validation = currentExpert
+        ? Model.validateTriades(currentExpert)
+        : [];
+
     return (
         <>
             <Grid
@@ -26,44 +39,65 @@ const Results = () => {
                 justifyContent="center"
                 alignItems="center"
             >
-                <Grid item xs={10}>
-                    {Model.variants.length > 1 &&
-                    Model.experts.length > 0 &&
-                    order != undefined ? (
-                        <ResultsList sortBy={order} />
-                    ) : (
-                        <Alert severity="error">
-                            Для порівняння необхідно не менше двох альтернатив.
-                        </Alert>
-                    )}
-                </Grid>
-                <Grid item xs={10}>
-                    {Model.comparisonsMatrix.map((comparisons, i) => (
-                        <ComparisonMatrix
-                            key={`comparisons_${i}`}
-                            comparisons={comparisons}
-                        />
-                    ))}
-                </Grid>
-                {validation.length > 0 ? (
-                    <Grid item xs={10}>
-                        <ComparisonsEquation sortBy={order} />
-                        {validation.map(([type, message]) => (
-                            <WhiteAlert
-                                key={message}
-                                variant="outlined"
-                                severity={type}
-                                sx={{ mb: 1, py: 0 }}
-                            >
-                                <span
-                                    dangerouslySetInnerHTML={{
-                                        __html: message
-                                    }}
-                                />
-                            </WhiteAlert>
-                        ))}
-                    </Grid>
+                {Model.experts.length > 1 &&
+                Model.calcMethod == CalculationMethod.Comparison ? (
+                    <>
+                        <Grid item md={4} xs={10} justifySelf="flex-start">
+                            <ExpertSelect
+                                value={currentExpert}
+                                onChange={(expert) => {
+                                    Model.currentExpert = expert;
+                                }}
+                            />
+                        </Grid>
+                        <Grid item md={6}></Grid>
+                    </>
                 ) : null}
+                {Model.variants.length > 1 && order ? (
+                    <>
+                        <Grid item xs={10}>
+                            <ResultsList
+                                expert={currentExpert}
+                                sortBy={order}
+                            />
+                        </Grid>
+                        {currentExpert ? (
+                            <Grid item xs={10}>
+                                <ComparisonMatrix
+                                    comparisons={
+                                        Model.comparisonsMatrix[
+                                            Model.experts.indexOf(currentExpert)
+                                        ]
+                                    }
+                                />
+                            </Grid>
+                        ) : null}
+                        {validation.length > 0 ? (
+                            <Grid item xs={10}>
+                                <ComparisonsEquation sortBy={order} />
+                                {validation.map(([type, message]) => (
+                                    <WhiteAlert
+                                        key={message}
+                                        variant="outlined"
+                                        severity={type}
+                                        sx={{ mb: 1, py: 0 }}
+                                    >
+                                        <span
+                                            dangerouslySetInnerHTML={{
+                                                __html: message
+                                            }}
+                                        />
+                                    </WhiteAlert>
+                                ))}
+                            </Grid>
+                        ) : null}
+                    </>
+                ) : (
+                    <Alert severity="error">
+                        Для порівняння необхідно не менше двох альтернатив та
+                        принаймні один експерт.
+                    </Alert>
+                )}
             </Grid>
             <Navigation back />
         </>

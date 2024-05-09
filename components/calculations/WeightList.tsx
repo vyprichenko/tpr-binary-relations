@@ -1,27 +1,24 @@
 import { observer } from 'mobx-react-lite';
-import Typography from '@mui/material/Typography';
-import WeightInput from './WeightInput';
+import Grid from '@mui/material/Grid';
+import WeightRatingInput from './WeightRatingInput';
+import WeightSliderInput from './WeightSliderInput';
 import Model from '@/model/Model';
+import Expert from '@/model/types/Expert';
 
-const WeightList = (): JSX.Element => {
-    return (
-        <>
-            {Model.weightsMatrix.map((weights, i) => (
-                <div key={i}>
-                    {Model.weightsMatrix.length > 1 ? (
-                        <Typography variant="subtitle1" gutterBottom>
-                            Експерт{' '}
-                            <strong>{weights[0].expert.toString()}</strong> дає
-                            оцінку альтернативам:
-                        </Typography>
-                    ) : null}
+const WeightList = ({ expert }: { expert: Expert | null }): JSX.Element => (
+    <>
+        {Model.weightsMatrix
+            .filter((weights) => weights[0].expert == expert || !expert)
+            .map((weights, i) => (
+                <Grid key={i} container sx={{ mb: 3 }} spacing={2}>
                     {weights.map((weight) => (
-                        <WeightInput key={weight.id} weight={weight} />
+                        <Grid item key={weight.id} xs={12}>
+                            <WeightSliderInput weight={weight} />
+                        </Grid>
                     ))}
-                </div>
+                </Grid>
             ))}
-        </>
-    );
-};
+    </>
+);
 
 export default observer(WeightList);

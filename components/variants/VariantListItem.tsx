@@ -9,6 +9,7 @@ import VariantLabel from '@/components/VariantLabel';
 const VariantListItem = ({ variant }: { variant: Variant }): JSX.Element => (
     <Card key={variant.id}>
         <CardHeader
+            sx={{ alignItems: 'flex-start' }}
             avatar={<VariantLabel variant={variant} />}
             title={variant.toString()}
             titleTypographyProps={{ variant: 'body1' }}

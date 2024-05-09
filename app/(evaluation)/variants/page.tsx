@@ -1,19 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react-lite';
 import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import Navigation from '@/components/Navigation';
 import VariantList from '@/components/variants/VariantList';
 import VariantDialog from '@/components/variants/VariantDialog';
 import Model from '@/model/Model';
 
 const Variants = () => {
-    const router = useRouter();
     const [isDialogOpen, setDialogOpen] = useState(false);
 
     const handleDialogOpen = () => {
