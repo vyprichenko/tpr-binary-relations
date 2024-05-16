@@ -24,8 +24,8 @@ export default class Weight {
         }
     }
 
-    valueOf() {
-        return this.value * this.expert.weight;
+    valueOf(considerExpertWeight: boolean = true) {
+        return this.value * (considerExpertWeight ? this.expert.weight : 1);
     }
 
     toString() {

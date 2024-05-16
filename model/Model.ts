@@ -28,18 +28,56 @@ class Model {
 
     experts: Expert[] = [
         new Expert(
-            'Fabrice Bellard',
+            'Денис Бобок',
+            0.5,
+            0.2,
+            0.2,
+            0.1,
+            0.05
+            // JobPosition.LeadingEngeneer,
+            // AcademicDegree.NonDegreeSpecialist
+        ),
+        new Expert(
+            'Гліб Чекмарьов',
             1,
             0.3,
-            0.5,
+            0.4,
             0.1,
-            0.05,
-            JobPosition.LeadingEngeneer,
-            AcademicDegree.NonDegreeSpecialist
+            0.04
+            // JobPosition.LeadingEngeneer,
+            // AcademicDegree.NonDegreeSpecialist
+        ),
+        new Expert(
+            'Максим Лабунський',
+            0.7,
+            0.2,
+            0.5,
+            0.08,
+            0.04
+            // JobPosition.LeadingEngeneer,
+            // AcademicDegree.NonDegreeSpecialist
+        ),
+        new Expert(
+            'Іван Скалига',
+            0.3,
+            0.1,
+            0.2,
+            0.04,
+            0.02
+            // JobPosition.LeadingEngeneer,
+            // AcademicDegree.NonDegreeSpecialist
         )
     ];
 
+    /**
+     * Експерт, який працює в даний момент.
+     */
     currentExpert: Expert | null = this.experts[0] ?? null;
+
+    /**
+     * Врахувати компетентність експертів при визначенні результату.
+     */
+    considerExpertWeight: boolean = true;
 
     steps: { link: string; label: string }[] = [
         { label: 'Альтернативи', link: '/variants' },
@@ -48,7 +86,10 @@ class Model {
         { label: 'Результат', link: '/results' }
     ];
 
-    calcMethod: CalculationMethod = CalculationMethod.Comparison;
+    calcMethod: CalculationMethod =
+        this.experts.length > 1
+            ? CalculationMethod.Weight
+            : CalculationMethod.Comparison;
 
     constructor() {
         makeObservable(this, {
@@ -56,6 +97,7 @@ class Model {
             experts: observable,
             currentExpert: observable,
             calcMethod: observable,
+            considerExpertWeight: observable,
             expertsWeights: computed,
             comparisonsMatrix: computed,
             variantsTriades: computed,
@@ -100,13 +142,21 @@ class Model {
      * Ваги (впливовість) експертів.
      */
     get expertsWeights() {
-        const totalWeight = this.experts.reduce(
-            (summ, expert) => (summ += expert.weight),
-            0
-        );
+        if (this.considerExpertWeight) {
+            const totalWeight = this.experts.reduce(
+                (summ, expert) => (summ += expert.weight),
+                0
+            );
+            return this.experts.reduce<ExpertsWeights>(
+                (summ, expert) => (
+                    (summ[expert.id] = expert.weight / totalWeight), summ
+                ),
+                {}
+            );
+        }
         return this.experts.reduce<ExpertsWeights>(
             (summ, expert) => (
-                (summ[expert.id] = expert.weight / totalWeight), summ
+                (summ[expert.id] = 1 / this.experts.length), summ
             ),
             {}
         );
@@ -252,7 +302,11 @@ class Model {
             return this.variants.map((v) =>
                 this.weightsMatrix[this.experts.indexOf(expert)]
                     .filter(({ variant }) => variant == v)
-                    .reduce((sum, wei) => (sum += wei.valueOf()), 0)
+                    .reduce(
+                        (sum, wei) =>
+                            (sum += wei.valueOf(this.considerExpertWeight)),
+                        0
+                    )
             );
 
         return zip(...this.experts.map((e) => this.calculateWeights(e))).map(

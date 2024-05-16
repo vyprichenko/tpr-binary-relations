@@ -4,6 +4,9 @@ import { observer } from 'mobx-react-lite';
 import { styled } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 import Navigation from '@/components/Navigation';
 import ExpertSelect from '@/components/calculations/ExpertSelect';
@@ -31,6 +34,12 @@ const Results = () => {
         ? Model.validateTriades(currentExpert)
         : [];
 
+    const handleWeightCheckboxChange = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        Model.considerExpertWeight = event.target.checked;
+    };
+
     return (
         <>
             <Grid
@@ -51,6 +60,26 @@ const Results = () => {
                             />
                         </Grid>
                         <Grid item md={6}></Grid>
+                    </>
+                ) : null}
+                {Model.experts.length > 1 &&
+                Model.calcMethod == CalculationMethod.Weight ? (
+                    <>
+                        <Grid item xs={10} justifySelf="flex-start">
+                            <FormGroup>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={Model.considerExpertWeight}
+                                            onChange={
+                                                handleWeightCheckboxChange
+                                            }
+                                        />
+                                    }
+                                    label="Врахувати компетентність експертів"
+                                />
+                            </FormGroup>
+                        </Grid>
                     </>
                 ) : null}
                 {Model.variants.length > 1 && order ? (
