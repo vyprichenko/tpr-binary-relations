@@ -7,6 +7,9 @@ import StepButton from '@mui/material/StepButton';
 import StepLabel from '@mui/material/StepLabel';
 import Model from '@/model/Model';
 
+/**
+ * Компонент для відображення кроків роботи додатку.
+ */
 const AppStepper = (): JSX.Element => {
     const router = useRouter();
     const pathname = usePathname();

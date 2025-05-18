@@ -5,17 +5,24 @@ import Expert from '@/model/types/Expert';
 import Comparison from '@/model/types/Comparison';
 import Weight from '@/model/types/Weight';
 import CalculationMethod from '@/types/CalculationMethod';
-import JobPosition from '@/types/JobPosition';
-import AcademicDegree from '@/types/AcademicDegree';
 import ExpertsWeights from '@/types/ExpertsWeights';
 import ValidationResult from '@/types/ValidationResult';
 import cartesianIterator from '@/utils/cartesianIterator';
 
 class Model {
+    /**
+     * Максимальна кількість варіантів для порівняння.
+     */
     variantsLimit = 10;
 
+    /**
+     * Максимальна кількість експертів.
+     */
     expertsLimit = 5;
 
+    /**
+     * Початкові варіанти для порівняння.
+     */
     // prettier-ignore
     variants: Variant[] = [
         new Variant('Використання IT студентами для презентації матеріалів, тем на заняттях'),
@@ -26,47 +33,14 @@ class Model {
         new Variant('Використання IT студентами для проведення дозвілля, показу фільмів, перегляду фото тощо')
     ];
 
+    /**
+     * Початковий перелік експертів.
+     */
     experts: Expert[] = [
-        new Expert(
-            'Денис Бобок',
-            0.5,
-            0.2,
-            0.2,
-            0.1,
-            0.05
-            // JobPosition.LeadingEngeneer,
-            // AcademicDegree.NonDegreeSpecialist
-        ),
-        new Expert(
-            'Гліб Чекмарьов',
-            1,
-            0.3,
-            0.4,
-            0.1,
-            0.04
-            // JobPosition.LeadingEngeneer,
-            // AcademicDegree.NonDegreeSpecialist
-        ),
-        new Expert(
-            'Максим Лабунський',
-            0.7,
-            0.2,
-            0.5,
-            0.08,
-            0.04
-            // JobPosition.LeadingEngeneer,
-            // AcademicDegree.NonDegreeSpecialist
-        ),
-        new Expert(
-            'Іван Скалига',
-            0.3,
-            0.1,
-            0.2,
-            0.04,
-            0.02
-            // JobPosition.LeadingEngeneer,
-            // AcademicDegree.NonDegreeSpecialist
-        )
+        new Expert('Денис Бобок', 0.5, 0.2, 0.2, 0.1, 0.05),
+        new Expert('Гліб Чекмарьов', 1, 0.3, 0.4, 0.1, 0.04),
+        new Expert('Максим Лабунський', 0.7, 0.2, 0.5, 0.08, 0.04),
+        new Expert('Іван Скалига', 0.3, 0.1, 0.2, 0.04, 0.02)
     ];
 
     /**
@@ -79,6 +53,9 @@ class Model {
      */
     considerExpertWeight: boolean = true;
 
+    /**
+     * Кроки виконання роботи.
+     */
     steps: { link: string; label: string }[] = [
         { label: 'Альтернативи', link: '/variants' },
         { label: 'Експерти', link: '/experts' },
@@ -86,6 +63,9 @@ class Model {
         { label: 'Результат', link: '/results' }
     ];
 
+    /**
+     * Метод порівняння альтернатив залежно від кількості експертів. 
+     */
     calcMethod: CalculationMethod =
         this.experts.length > 1
             ? CalculationMethod.Weight
@@ -139,7 +119,7 @@ class Model {
     }
 
     /**
-     * Ваги (впливовість) експертів.
+     * Вагомість думки (впливовість) експертів.
      */
     get expertsWeights() {
         if (this.considerExpertWeight) {
@@ -268,7 +248,7 @@ class Model {
     }
 
     /**
-     * Надає оцінку порівнянню.
+     * Дає оцінку порівнянню.
      */
     setComparisonValue(comparison: Comparison, value: number | null) {
         const { variant1, variant2, expert } = comparison;

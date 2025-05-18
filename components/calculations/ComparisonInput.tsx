@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import Rating, { IconContainerProps } from '@mui/material/Rating';
 import Typography from '@mui/material/Typography';
 import { deepOrange } from '@mui/material/colors';
@@ -39,7 +38,7 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
     }
 }));
 
-function IconContainer(props: IconContainerProps) {
+const IconContainer = (props: IconContainerProps) => {
     const { value, ...other } = props;
     const icons = {
         1: <KeyboardArrowLeftSharpIcon fontSize="large" />,
@@ -47,8 +46,12 @@ function IconContainer(props: IconContainerProps) {
         3: <KeyboardArrowRightSharpIcon fontSize="large" />
     };
     return <span {...other}>{icons[value as keyof typeof icons]}</span>;
-}
+};
 
+/**
+ * Компонент для введення результату порівняння двох альтернатив:
+ * краща, гірша, або дорівнює.
+ */
 const ComparisonInput = ({
     comparison
 }: {

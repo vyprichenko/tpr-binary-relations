@@ -8,33 +8,11 @@ import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import Expert from '@/model/types/Expert';
 import Model from '@/model/Model';
-import JobPosition from '@/types/JobPosition';
-import AcademicDegree from '@/types/AcademicDegree';
-import declension from '@/utils/declension';
 
+/**
+ * Блок для відображення основної інформації про залученого експерта.
+ */
 const ExpertCard = ({ expert }: { expert: Expert }): JSX.Element => {
-    const job =
-        Object.entries(JobPosition).find(
-            ([key]) => key == expert.jobPosition
-        )?.[1] ?? JobPosition.LeadingEngeneer;
-
-    const degree =
-        Object.entries(AcademicDegree).find(
-            ([key]) => key == expert.academicDegree
-        )?.[1] ?? AcademicDegree.NonDegreeSpecialist;
-
-    const experience = (() => {
-        if (expert.experience > 50) return `більше 50 років`;
-        if (expert.experience < 1) return `менше року`;
-
-        return `${expert.experience} ${declension({
-            number: expert.experience,
-            f0: 'рік',
-            f1: 'року',
-            f2: 'років'
-        })}`;
-    })();
-
     return (
         <Card>
             <CardHeader
@@ -55,17 +33,10 @@ const ExpertCard = ({ expert }: { expert: Expert }): JSX.Element => {
                     </IconButton>
                 }
                 title={expert.toString()}
-                // subheader={expert.academicDegree.toString()}
             />
             <CardContent>
-                {/* <Typography variant="body2" color="text.secondary">
-                    {`Займає посаду "${expert.jobPosition}", досвід роботи ${experience}.`}
-                </Typography> */}
                 <Typography variant="body2" color="text.primary">
-                    {`Компетентність: ${Number(
-                        // Model.expertsWeights[expert.id].toFixed(2)
-                        expert.weight.toFixed(2)
-                    )}`}
+                    {`Компетентність: ${Number(expert.weight.toFixed(2))}`}
                 </Typography>
             </CardContent>
         </Card>

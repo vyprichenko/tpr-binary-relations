@@ -6,6 +6,9 @@ import Variant from '@/model/types/Variant';
 import Model from '@/model/Model';
 import VariantLabel from '@/components/VariantLabel';
 
+/**
+ * Елемент списку альтернатив.
+ */
 const VariantListItem = ({ variant }: { variant: Variant }): JSX.Element => (
     <Card key={variant.id}>
         <CardHeader

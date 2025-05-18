@@ -1,29 +1,29 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { blueGrey } from '@mui/material/colors';
-import { blue } from '@mui/material/colors';
+import { styled } from '@mui/material/styles';
+import { blue, blueGrey } from '@mui/material/colors';
 import Model from '@/model/Model';
 import Comparison from '@/model/types/Comparison';
 import VariantLabel from '@/components/VariantLabel';
 
-const GridSpan = ({
-    children,
-    fill = false
-}: {
-    children?: ReactNode;
-    fill?: boolean;
-}): JSX.Element => {
-    const style = {
+const GridSpan = styled('span')(({ theme }) => {
+    return {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
         border: `1px solid ${blueGrey[300]}`,
         borderRadius: 2,
-        backgroundColor: fill ? blue[50] : 'white'
+        backgroundColor: theme.palette.mode == 'dark' ? blueGrey[300] : 'white'
     };
-    return <span style={children ? style : undefined}>{children}</span>;
-};
+});
 
+const GridSpanFilled = styled(GridSpan)(({ theme }) => ({
+    backgroundColor: theme.palette.mode == 'dark' ? blueGrey[500] : blue[50]
+}));
+
+/**
+ * Результат порівнянь у вигляді матриці.
+ */
 const ComparisonMatrix = ({
     comparisons
 }: {
@@ -40,30 +40,30 @@ const ComparisonMatrix = ({
                 gap: 4
             }}
         >
-            <GridSpan fill>–</GridSpan>
+            <GridSpanFilled>–</GridSpanFilled>
             {variants.map((v) => (
-                <GridSpan key={v.id} fill>
+                <GridSpanFilled key={v.id}>
                     <VariantLabel variant={v} />
-                </GridSpan>
+                </GridSpanFilled>
             ))}
-            <GridSpan fill>
+            <GridSpanFilled>
                 <i>
                     &sum;d<sub>ij</sub>
                 </i>
-            </GridSpan>
+            </GridSpanFilled>
             {variants.map((v, vi) =>
                 comparisons
                     .filter(({ variant1 }) => variant1 == v)
                     .map((c, ci, ciArr) => (
                         <React.Fragment key={`matrix_comp_${c.id}`}>
                             {ci == 0 ? (
-                                <GridSpan fill>
+                                <GridSpanFilled>
                                     <VariantLabel variant={v} />
-                                </GridSpan>
+                                </GridSpanFilled>
                             ) : null}
                             <GridSpan>{c.toStringValue()}</GridSpan>
                             {ci == ciArr.length - 1 ? (
-                                <GridSpan fill>
+                                <GridSpanFilled>
                                     {ciArr
                                         .reduce(
                                             (sum, cii) =>
@@ -71,7 +71,7 @@ const ComparisonMatrix = ({
                                             0
                                         )
                                         .toString()}
-                                </GridSpan>
+                                </GridSpanFilled>
                             ) : null}
                         </React.Fragment>
                     ))

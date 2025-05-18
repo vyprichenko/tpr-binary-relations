@@ -8,6 +8,9 @@ import FormLabel from '@mui/material/FormLabel';
 import CalculationMethod from '@/types/CalculationMethod';
 import Model from '@/model/Model';
 
+/**
+ * Перемикач методу порівняння.
+ */
 const RowRadioButtonsGroup = () => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         Model.calcMethod = +(e.target as HTMLInputElement).value;

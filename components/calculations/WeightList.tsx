@@ -1,10 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import Grid from '@mui/material/Grid';
-import WeightRatingInput from './WeightRatingInput';
 import WeightSliderInput from './WeightSliderInput';
 import Model from '@/model/Model';
 import Expert from '@/model/types/Expert';
 
+/**
+ * Перелік всіх виконаних зважувань.
+ */
 const WeightList = ({ expert }: { expert: Expert | null }): JSX.Element => (
     <>
         {Model.weightsMatrix

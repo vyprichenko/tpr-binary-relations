@@ -17,6 +17,9 @@ const SliderTooltip = (props: SliderValueLabelProps) => {
     );
 };
 
+/**
+ * Компонент для вводу вагомості даної альтернативи у вигляді слайдера.
+ */
 const WeightSliderInput = ({ weight }: { weight: Weight }): JSX.Element => {
     const onSliderChange = (e: Event, newValue: number | number[]) => {
         weight.value = newValue as number;

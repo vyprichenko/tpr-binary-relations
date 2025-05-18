@@ -1,3 +1,6 @@
+/**
+ * Посада на робочому місці.
+ */
 enum JobPosition {
     LeadingEngeneer = 'Провідний інженер',
     Researcher = 'Науковий співробітник',

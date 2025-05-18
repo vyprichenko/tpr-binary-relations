@@ -64,23 +64,19 @@ const Results = () => {
                 ) : null}
                 {Model.experts.length > 1 &&
                 Model.calcMethod == CalculationMethod.Weight ? (
-                    <>
-                        <Grid item xs={10} justifySelf="flex-start">
-                            <FormGroup>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={Model.considerExpertWeight}
-                                            onChange={
-                                                handleWeightCheckboxChange
-                                            }
-                                        />
-                                    }
-                                    label="Врахувати компетентність експертів"
-                                />
-                            </FormGroup>
-                        </Grid>
-                    </>
+                    <Grid item xs={10} justifySelf="flex-start">
+                        <FormGroup>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={Model.considerExpertWeight}
+                                        onChange={handleWeightCheckboxChange}
+                                    />
+                                }
+                                label="Врахувати компетентність експертів"
+                            />
+                        </FormGroup>
+                    </Grid>
                 ) : null}
                 {Model.variants.length > 1 && order ? (
                     <>

@@ -6,6 +6,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Model from '@/model/Model';
 import Expert from '@/model/types/Expert';
 
+/**
+ * Компонент вибору експерта.
+ */
 const ExpertSelect = ({
     value,
     onChange

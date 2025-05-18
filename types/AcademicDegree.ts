@@ -1,3 +1,6 @@
+/**
+ * Академічний рівень спеціаліста.
+ */
 enum AcademicDegree {
     NonDegreeSpecialist = 'Спеціаліст',
     PhD = 'Кандидат наук',

@@ -1,10 +1,12 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import ComparisonInput from './ComparisonInput';
-
 import Model from '@/model/Model';
 import Expert from '@/model/types/Expert';
 
+/**
+ * Перелік всіх виконаних порівнянь.
+ */
 const ComparisonList = ({ expert }: { expert: Expert | null }): JSX.Element => {
     return (
         <>

@@ -3,10 +3,16 @@ import { v4 as uuidv4 } from 'uuid';
 import Expert from './Expert';
 import Variant from './Variant';
 
+/**
+ * Порівняння двох альтернатив за допомогою експерта.
+ */
 export default class Comparison {
     readonly id: string;
     readonly minValue = 0;
     readonly maxValue = 2;
+
+    // Внутрішнє значення результату порівняння.
+    // Початкове значення -1 означає що оцінка відсутня.
     private _value: number = -1;
 
     constructor(
@@ -18,6 +24,10 @@ export default class Comparison {
         makeAutoObservable(this);
     }
 
+    /**
+     * Встановлює результат порівняння.
+     * Значення має входити в діапазон [minValue, maxValue].
+     */
     set value(v: number | null) {
         if (v === null) {
             this._value = -1;
@@ -39,6 +49,9 @@ export default class Comparison {
         return this._value;
     }
 
+    /**
+     * Перетворений результат порівняння у діапазоні [-1, 1].
+     */
     getRelativeValue(variant: Variant) {
         const median = (this.minValue + this.maxValue) / 2;
         if (this.value < 0) {
@@ -85,6 +98,10 @@ export default class Comparison {
         return `${this.value - 1}`;
     }
 
+    /**
+     * Метод для визначення, що два порівняння відносяться
+     * до одних і тих самих альтернатив.
+     */
     matches(that: Comparison) {
         // prettier-ignore
         return (

@@ -3,6 +3,9 @@ import { Grid } from '@mui/material';
 import Model from '@/model/Model';
 import VariantListItem from './VariantListItem';
 
+/**
+ * Список наявних альтернатив для порівняння.
+ */
 const VariantList = (): JSX.Element => {
     const useWideCards = Model.variants.some(
         (variant) => variant.name.length > 50

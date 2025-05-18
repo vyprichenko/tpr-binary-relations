@@ -4,6 +4,9 @@ import Box from '@mui/material/Box';
 import Model from '@/model/Model';
 import Variant from '@/model/types/Variant';
 
+/**
+ * Математичний запис виконаного порівняння.
+ */
 const ComparisonsEquation = ({ sortBy }: { sortBy: number[] }): JSX.Element => (
     <Box sx={{ p: 0, mb: 4, fontSize: 20, textAlign: 'center' }}>
         {[...Model.variants]

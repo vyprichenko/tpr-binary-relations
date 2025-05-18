@@ -3,6 +3,7 @@ import Jabber from 'jabber';
 import JobPosition from '@/types/JobPosition';
 import AcademicDegree from '@/types/AcademicDegree';
 
+// Вагомість посади експерта.
 const JOB_WEIGHTS = {
     [JobPosition.LeadingEngeneer]: 1,
     [JobPosition.Researcher]: 1,
@@ -13,6 +14,7 @@ const JOB_WEIGHTS = {
     [JobPosition.Director]: 10
 };
 
+// Вагомість наукового ступеню експерта.
 const DEGREE_WEIGHTS = {
     [AcademicDegree.NonDegreeSpecialist]: 1,
     [AcademicDegree.PhD]: 4,
@@ -20,8 +22,12 @@ const DEGREE_WEIGHTS = {
     [AcademicDegree.Academician]: 10
 };
 
+// Екземпляр утиліти для створення випадкових імен.
 const jabber = new Jabber();
 
+/**
+ * Запрошений експерт.
+ */
 export default class Expert {
     static generateName() {
         return jabber.createFullName(false);
@@ -42,8 +48,13 @@ export default class Expert {
         this.id = uuidv4();
     }
 
+    /**
+     * Вирахована вага експертної думки.
+     * Може залежити в тому числі від посади та академічного ступеню,
+     * якщо вони задані, вле по останнім вимогам до лабораторної роботи
+     * ці поля не заповнюються.
+     */
     get weight() {
-        // TODO: old parameters, currently not in use
         if (this.jobPosition && this.academicDegree) {
             return (
                 (JOB_WEIGHTS[this.jobPosition] +

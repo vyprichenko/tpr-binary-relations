@@ -3,6 +3,9 @@ import { v4 as uuidv4 } from 'uuid';
 import Variant from './Variant';
 import Expert from './Expert';
 
+/**
+ * "Вага", що призначається експертом певній альтернативі.
+ */
 export default class Weight {
     readonly id: string;
     _value: number = 5;

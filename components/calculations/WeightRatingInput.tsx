@@ -25,6 +25,10 @@ function getLabelText(value: number) {
     return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
 }
 
+/**
+ * Компонент для вводу вагомості даної альтернативи
+ * у вигляді рядка інтерактивних зірочок.
+ */
 const WeightRatingInput = ({ weight }: { weight: Weight }): JSX.Element => {
     return (
         <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: '1rem' }}>

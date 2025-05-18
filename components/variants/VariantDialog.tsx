@@ -8,6 +8,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Model from '@/model/Model';
 
+/**
+ * Діалогове вікно для додавання альтернативи порівняння.
+ */
 const VariantDialog = ({
     isOpen,
     onClose

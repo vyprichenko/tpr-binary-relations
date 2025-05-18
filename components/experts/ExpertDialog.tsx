@@ -15,10 +15,11 @@ import InputLabel from '@mui/material/InputLabel';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import Model from '@/model/Model';
-import JobPosition from '@/types/JobPosition';
-import AcademicDegree from '@/types/AcademicDegree';
 import Expert from '@/model/types/Expert';
 
+/**
+ * Діалогове вікно для додавання нового експерта.
+ */
 const ExpertDialog = ({
     isOpen,
     onClose

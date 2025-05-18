@@ -1,3 +1,6 @@
+/**
+ * Вагомість голосів експертів.
+ */
 type ExpertsWeights = {
     [id: string]: number;
 };

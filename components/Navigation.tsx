@@ -1,10 +1,12 @@
 import { useRouter } from 'next/navigation';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Box from '@mui/material/Box';
 
+/**
+ * Кнопки "Далі / Назад" для навігації по сторінкам додатку.
+ */
 const Navigation = ({
     to,
     back = false

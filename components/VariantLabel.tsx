@@ -11,6 +11,9 @@ const VariantInfo = styled('i')(({ theme }) => ({
     }
 }));
 
+/**
+ * Спливаюча підказка з назвою альтернативи.
+ */
 const VariantLabel = ({ variant }: { variant: Variant }): JSX.Element => {
     const { variants } = Model;
     return (

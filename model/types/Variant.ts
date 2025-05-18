@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * Одна з порівнюваних альтернатив.
+ */
 export default class Variant {
     readonly id: string;
 

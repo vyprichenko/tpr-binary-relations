@@ -1,6 +1,9 @@
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 
+/**
+ * Елемент-обгортка для інформації про альтернативу.
+ */
 const VariantPaper = styled(Paper)(({ theme }) => ({
     ...theme.typography.body1,
     display: 'flex',

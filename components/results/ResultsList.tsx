@@ -25,6 +25,9 @@ const ResultCard = styled(Card)({
     }
 });
 
+/**
+ * Звіт з виконання порівнянь експертами.
+ */
 const ResultsList = ({
     expert,
     sortBy
