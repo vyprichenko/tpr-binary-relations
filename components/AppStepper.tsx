@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
-import StepLabel from '@mui/material/StepLabel';
 import Model from '@/model/Model';
 
 /**

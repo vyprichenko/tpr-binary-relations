@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 import { observer } from 'mobx-react-lite';
@@ -13,13 +13,13 @@ import Model from '@/model/Model';
 const Variants = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
 
-    const handleDialogOpen = () => {
+    const handleDialogOpen = useCallback(() => {
         setDialogOpen(true);
-    };
+    }, [setDialogOpen]);
 
-    const handleDialogClose = () => {
+    const handleDialogClose = useCallback(() => {
         setDialogOpen(false);
-    };
+    }, [setDialogOpen]);
 
     return (
         <>

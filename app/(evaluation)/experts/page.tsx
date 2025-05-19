@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { observer } from 'mobx-react-lite';
 import Alert from '@mui/material/Alert';
@@ -12,16 +12,15 @@ import ExpertDialog from '@/components/experts/ExpertDialog';
 import Model from '@/model/Model';
 
 const Experts = () => {
-    const router = useRouter();
     const [isDialogOpen, setDialogOpen] = useState(false);
 
-    const handleDialogOpen = () => {
+    const handleDialogOpen = useCallback(() => {
         setDialogOpen(true);
-    };
+    }, [setDialogOpen]);
 
-    const handleDialogClose = () => {
+    const handleDialogClose = useCallback(() => {
         setDialogOpen(false);
-    };
+    }, [setDialogOpen]);
 
     return (
         <>
